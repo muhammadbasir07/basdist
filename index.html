@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Studi Hadis & Pengendalian Diri</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; display: flex; height: 100vh; overflow: hidden; background-color: #0f172a; }
+        
+        /* Tombol Hamburger Mobile */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 100;
+            background-color: #00a896;
+            color: white;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        /* Sidebar Kiri */
+        .sidebar {
+            width: 300px;
+            background-color: #1e293b;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            height: 100%;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+            z-index: 90;
+        }
+        
+        .sidebar-header {
+            padding: 24px 20px;
+            background-color: #0f172a;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+        }
+        .sidebar-header h2 { font-size: 14px; color: #00a896; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; }
+        
+        .menu-container { flex: 1; overflow-y: auto; padding: 15px 0; }
+        
+        /* Menu Statis */
+        .static-item {
+            display: block;
+            padding: 12px 20px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 13.5px;
+            font-weight: 500;
+            border-radius: 6px;
+            margin: 4px 12px;
+            transition: all 0.2s;
+        }
+        .static-item:hover, .static-item.active { background-color: rgba(0, 168, 150, 0.1); color: #ffffff; }
+
+        /* Judul Kelompok */
+        .menu-group-title {
+            padding: 6px 16px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #64748b;
+            font-weight: 700;
+            margin: 15px 12px 4px 12px;
+            border-left: 2px solid #475569;
+        }
+
+        /* Tingkat 1: Tombol Kategori Utama */
+        .accordion-btn {
+            width: calc(100% - 24px);
+            margin: 4px 12px;
+            padding: 12px 16px;
+            background: none;
+            border: none;
+            color: #cbd5e1;
+            font-size: 13.5px;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .accordion-btn:hover { background-color: rgba(255, 255, 255, 0.03); color: #ffffff; }
+        .accordion-btn::after { content: '➔'; font-size: 10px; color: #64748b; transition: transform 0.2s; }
+        .accordion-btn.active-bab { color: #00a896; background-color: rgba(15, 23, 42, 0.2); }
+        .accordion-btn.active-bab::after { transform: rotate(90deg); color: #00a896; }
+        
+        /* Tingkat 1: Wadah Panel */
+        .panel {
+            display: none;
+            background-color: rgba(15, 23, 42, 0.2);
+            margin: 0 12px;
+            border-radius: 6px;
+            padding-bottom: 4px;
+        }
+
+        /* Link Langsung Tingkat 2 (E-Book) */
+        .panel a.direct-link {
+            display: block;
+            padding: 10px 16px 10px 24px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 12.5px;
+            line-height: 1.4;
+            transition: all 0.2s;
+            border-left: 2px solid transparent;
+        }
+        .panel a.direct-link:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.02); }
+        .panel a.direct-link.active-link { color: #00a896; background-color: rgba(0, 168, 150, 0.05); border-left: 2px solid #00a896; }
+
+        /* Tingkat 2: Tombol Sub-Accordion (Review Berkas) */
+        .sub-accordion-btn {
+            width: 100%;
+            padding: 10px 16px 10px 20px;
+            background: none;
+            border: none;
+            color: #cbd5e1;
+            font-size: 13px;
+            font-weight: 500;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+        .sub-accordion-btn:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.02); }
+        .sub-accordion-btn::after { content: '➔'; font-size: 9px; color: #475569; transition: transform 0.2s; }
+        .sub-accordion-btn.active-sub { color: #00a896; font-weight: 600; }
+        .sub-accordion-btn.active-sub::after { transform: rotate(90deg); color: #00a896; }
+
+        /* Tingkat 2: Wadah Sub-Panel */
+        .sub-panel {
+            display: none;
+            background-color: rgba(15, 23, 42, 0.4);
+            padding-bottom: 4px;
+        }
+
+        /* Tingkat 3: Link Akhir Hasil Analisis */
+        .sub-panel a {
+            display: block;
+            padding: 9px 16px 9px 36px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 12.5px;
+            line-height: 1.4;
+            transition: all 0.2s;
+            border-left: 2px solid transparent;
+        }
+        .sub-panel a:hover { color: #ffffff; background-color: rgba(255, 255, 255, 0.02); }
+        .sub-panel a.active-link { color: #00a896; background-color: rgba(0, 168, 150, 0.05); border-left: 2px solid #00a896; }
+        
+        .menu-emoji { margin-right: 8px; font-size: 14px; }
+
+        /* Area Frame Konten Utama */
+        .main-content { flex: 1; height: 100%; display: flex; flex-direction: column; background-color: #0f172a; position: relative; }
+        iframe { width: 100%; height: 100%; border: none; background-color: #ffffff; }
+
+        /* Overlay Mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 85;
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle { display: block; }
+            .sidebar { position: fixed; top: 0; left: 0; bottom: 0; transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay.open { display: block; }
+            .sidebar-header { padding-left: 70px; text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <div class="sidebar" id="sidebarMain">
+        <div class="sidebar-header">
+            <h2>STUDI HADIS DIGITAL</h2>
+        </div>
+        
+        <div class="menu-container">
+            <a href="home.html" target="contentFrame" class="static-item active" onclick="setStaticActive(this)"><span class="menu-emoji">🏠</span>Dashboard</a>
+            <a href="kata_pengantar.html" target="contentFrame" class="static-item" onclick="setStaticActive(this)"><span class="menu-emoji">📄</span>Kata Pengantar</a>
+            <a href="daftar_isi.html" target="contentFrame" class="static-item" onclick="setStaticActive(this)"><span class="menu-emoji">📋</span>Daftar Isi</a>
+            
+            <div class="menu-group-title">E-Book Pengendalian Diri</div>
+
+            <button class="accordion-btn" onclick="toggleAccordion(this)"><span><span class="menu-emoji">💢</span>BAB I: Emosi &amp; Amarah</span></button>
+            <div class="panel">
+                <a href="bab1_a.html" target="contentFrame" class="direct-link" onclick="setLinkActive(this)"><span class="menu-emoji">🛡️</span>a. Mengendalikan Amarah</a>
+                <a href="bab1_b.html" target="contentFrame" class="direct-link" onclick="setLinkActive(this)"><span class="menu-emoji">📜</span>b. Larangan Marah</a>
+                <a href="bab1_c.html" target="contentFrame" class="direct-link" onclick="setLinkActive(this)"><span class="menu-emoji">✨</span>c. Keutamaan Menahan</a>
+                <a href="bab1_d.html" target="contentFrame" class="direct-link" onclick="setLinkActive(this)"><span class="menu-emoji">🤝</span>d. Keutamaan Memaafkan</a>
+            </div>
+            
+            <button class="accordion-btn" onclick="toggleAccordion(this)"><span><span class="menu-emoji">💬</span>BAB II: Lisan &amp; Ucapan</span></button>
+            <div class="panel">
+                <a href="bab2_a.html" target="contentFrame" class="direct-link" onclick="setLinkActive(this)"><span class="menu-emoji">💎</span>A. Menjaga Lisan</a>
+                <a href="bab2_b.html" target="contentFrame" class="direct-link" onclick="setLinkActive(this)"><span class="menu-emoji">⚠️</span>B. Bahaya Ucapan</a>
+                <a href="bab2_c.html" target="contentFrame" class="direct-link" onclick="setLinkActive(this)"><span class="menu-emoji">🍃</span>C. Hal Tak Bermanfaat</a>
+            </div>
+            
+            <button class="accordion-btn" onclick="toggleAccordion(this)"><span><span class="menu-emoji">🍲</span>BAB III: Syahwat &amp; Konsumsi</span></button>
+            <div class="panel">
+                <a href="bab3_a.html" target="contentFrame" class="direct-link" onclick="setLinkActive(this)"><span class="menu-emoji">🌙</span>A. Nikah &amp; Puasa</a>
+                <a href="bab3_b.html" target="contentFrame" class="direct-link" onclick="setLinkActive(this)"><span class="menu-emoji">❌</span>B. Jangan Berlebihan</a>
+                <a href="bab3_c.html" target="contentFrame" class="direct-link" onclick="setLinkActive(this)"><span class="menu-emoji">🛑</span>C. Menjaga Perut</a>
+            </div>
+            
+            <button class="accordion-btn" onclick="toggleAccordion(this)"><span><span class="menu-emoji">🧠</span>BAB IV: Nafsu &amp; Orientasi</span></button>
+            <div class="panel">
+                <a href="bab4_a.html" target="contentFrame" class="direct-link" onclick="setLinkActive(this)"><span class="menu-emoji">⭐</span>A. Mengendalikan Nafsu</a>
+                <a href="bab4_b.html" target="contentFrame" class="direct-link" onclick="setLinkActive(this)"><span class="menu-emoji">🌍</span>B. Zuhud terhadap Dunia</a>
+                <a href="bab4_c.html" target="contentFrame" class="direct-link" onclick="setLinkActive(this)"><span class="menu-emoji">🥀</span>C. Bahaya Ketamakan</a>
+            </div>
+            
+            <button class="accordion-btn" onclick="toggleAccordion(this)"><span><span class="menu-emoji">⏳</span>BAB V: Kesabaran Spiritual</span></button>
+            <div class="panel">
+                <a href="bab5_a.html" target="contentFrame" class="direct-link" onclick="setLinkActive(this)"><span class="menu-emoji">🌊</span>A. Kesabaran saat Ujian</a>
+                <a href="bab5_b.html" target="contentFrame" class="direct-link" onclick="setLinkActive(this)"><span class="menu-emoji">📅</span>B. Puasa Sunnah</a>
+            </div>
+
+
+            <div class="menu-group-title">Hasil Evaluasi Media</div>
+
+            <button class="accordion-btn" onclick="toggleAccordion(this)"><span><span class="menu-emoji">📚</span>Review E-Book</span></button>
+            <div class="panel">
+                <button class="sub-accordion-btn" onclick="toggleSubAccordion(this)"><span><span class="menu-emoji">📄</span>Review 1 (Ensiklopedia)</span></button>
+                <div class="sub-panel">
+                    <a href="review1_identitas.html" target="contentFrame" onclick="setLinkActive(this)">🔹 Identitas &amp; Sumber</a>
+                    <a href="review1_identitas.html" target="contentFrame" onclick="setLinkActive(this)">🔹 Analisis Kelebihan</a>
+                    <a href="review1_identitas.html" target="contentFrame" onclick="setLinkActive(this)">🔹 Analisis Kekurangan</a>
+                </div>
+            </div>
+            
+            <button class="accordion-btn" onclick="toggleAccordion(this)"><span><span class="menu-emoji">🌐</span>Review Website</span></button>
+            <div class="panel">
+                <button class="sub-accordion-btn" onclick="toggleSubAccordion(this)"><span><span class="menu-emoji">🖥️</span>Review 2 (Hadits Tazkia)</span></button>
+                <div class="sub-panel">
+                    <a href="review2_uiux.html" target="contentFrame" onclick="setLinkActive(this)">🔹 Fungsionalitas Fitur</a>
+                    <a href="review2_uiux.html" target="contentFrame" onclick="setLinkActive(this)">🔹 Analisis Kelebihan &amp; Kekurangan</a>
+                </div>
+                <button class="sub-accordion-btn" onclick="toggleSubAccordion(this)"><span><span class="menu-emoji">🖥️</span>Review 3 (Hadits Arina)</span></button>
+                <div class="sub-panel">
+                    <a href="review3_responsif.html" target="contentFrame" onclick="setLinkActive(this)">🔹 Keterbatasan Fitur</a>
+                    <a href="review3_responsif.html" target="contentFrame" onclick="setLinkActive(this)">🔹 Analisis Kekurangan &amp; Kelebihan</a>
+                </div>
+                <button class="sub-accordion-btn" onclick="toggleSubAccordion(this)"><span><span class="menu-emoji">🖥️</span>Review 4 (M. Basuki Web)</span></button>
+                <div class="sub-panel">
+                    <a href="review4_pencarian.html" target="contentFrame" onclick="setLinkActive(this)">🔹 Keterbatasan Struktur</a>
+                    <a href="review4_pencarian.html" target="contentFrame" onclick="setLinkActive(this)">🔹 Analisis Kekurangan &amp; Kelebihan</a>
+                </div>
+            </div>
+
+            <button class="accordion-btn" onclick="toggleAccordion(this)"><span><span class="menu-emoji">📱</span>Review Aplikasi</span></button>
+            <div class="panel">
+                <button class="sub-accordion-btn" onclick="toggleSubAccordion(this)"><span><span class="menu-emoji">🤖</span>Review 5 (APK Android)</span></button>
+                <div class="sub-panel">
+                    <a href="review5_sanad.html" target="contentFrame" onclick="setLinkActive(this)">🔹 Fitur Personalisasi</a>
+                    <a href="review5_sanad.html" target="contentFrame" onclick="setLinkActive(this)">🔹 Ringkasan Evaluasi</a>
+                </div>
+                <button class="sub-accordion-btn" onclick="toggleSubAccordion(this)"><span><span class="menu-emoji">💻</span>Review 6 (APK Desktop)</span></button>
+                <div class="sub-panel">
+                    <a href="review6_antarmuka.html" target="contentFrame" onclick="setLinkActive(this)">🔹 Kekuatan Mesin Riset</a>
+                    <a href="review6_antarmuka.html" target="contentFrame" onclick="setLinkActive(this)">🔹 Evaluasi Syamilah</a>
+                </div>
+            </div>
+            
+            <div class="menu-group-title">Profil Akhir</div>
+            <a href="biografi.html" target="contentFrame" class="static-item" onclick="setStaticActive(this)"><span class="menu-emoji">👤</span>Biografi Editor</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <iframe src="home.html" name="contentFrame"></iframe>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById("sidebarMain").classList.toggle("open");
+            document.getElementById("sidebarOverlay").classList.toggle("open");
+        }
+
+        // LEVEL 1: Mengatur Akordion Utama (Review Ebook, Web, Aplikasi)
+        function toggleAccordion(btn) {
+            var panel = btn.nextElementSibling;
+            var isCurrentActive = btn.classList.contains("active-bab");
+            
+            // Tutup semua level 1 lainnya agar rapi
+            var allBtns = document.querySelectorAll(".accordion-btn");
+            var allPanels = document.querySelectorAll(".panel");
+            allBtns.forEach(b => b.classList.remove("active-bab"));
+            allPanels.forEach(p => p.style.display = "none");
+            
+            // Buka panel saat ini jika sebelumnya tertutup
+            if (!isCurrentActive) {
+                btn.classList.add("active-bab");
+                panel.style.display = "block";
+            }
+        }
+
+        // LEVEL 2 & 3: Perbaikan logika isolasi klik murni agar akordion berjalan lancar dan tidak menutup acak
+        function toggleSubAccordion(btn) {
+            var subPanel = btn.nextElementSibling;
+            var isCurrentSubActive = btn.classList.contains("active-sub");
+            
+            // Isolasi pencarian hanya di dalam panel induk yang aktif saat ini saja
+            var parentPanel = btn.closest(".panel");
+            var siblingSubBtns = parentPanel.querySelectorAll(".sub-accordion-btn");
+            var siblingSubPanels = parentPanel.querySelectorAll(".sub-panel");
+            
+            siblingSubBtns.forEach(b => b.classList.remove("active-sub"));
+            siblingSubPanels.forEach(p => p.style.display = "none");
+            
+            // Buka sub-panel jika sebelumnya belum aktif
+            if (!isCurrentSubActive) {
+                btn.classList.add("active-sub");
+                subPanel.style.display = "block";
+            }
+        }
+
+        function setStaticActive(element) {
+            clearAllActive();
+            element.classList.add('active');
+            closeAllPanels();
+            if (window.innerWidth <= 768) toggleSidebar();
+        }
+
+        function setLinkActive(element) {
+            clearAllActive();
+            element.classList.add('active-link');
+            if (window.innerWidth <= 768) toggleSidebar();
+        }
+
+        function clearAllActive() {
+            var statics = document.getElementsByClassName('static-item');
+            for (var i = 0; i < statics.length; i++) statics[i].classList.remove('active');
+            
+            var links = document.querySelectorAll('.panel a, .sub-panel a');
+            for (var j = 0; j < links.length; j++) links[j].classList.remove('active-link');
+        }
+
+        function closeAllPanels() {
+            var panels = document.querySelectorAll('.panel');
+            var subPanels = document.querySelectorAll('.sub-panel');
+            var btns = document.querySelectorAll('.accordion-btn');
+            var subBtns = document.querySelectorAll('.sub-accordion-btn');
+            
+            panels.forEach(p => p.style.display = "none");
+            subPanels.forEach(p => p.style.display = "none");
+            btns.forEach(b => b.classList.remove('active-bab'));
+            subBtns.forEach(b => b.classList.remove('active-sub'));
+        }
+    </script>
+</body>
+</html>

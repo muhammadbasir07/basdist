@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cover - Pengendalian Diri</title>
+    <style>
+        body { margin: 0; padding: 0; background-color: #0f172a; font-family: 'Segoe UI', -apple-system, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .cover-card { width: 420px; height: 600px; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; position: relative; display: flex; flex-direction: column; justify-content: space-between; padding: 45px 35px; box-sizing: border-box; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        
+        /* Ornamen Garis Matriks/Digital Abstract */
+        .cover-card::before { content: ""; position: absolute; top: -10%; right: -10%; width: 250px; height: 250px; border-radius: 50%; background: radial-gradient(circle, rgba(0, 168, 150, 0.15) 0%, transparent 70%); pointer-events: none; }
+        .digital-lines { position: absolute; top: 35%; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, rgba(0, 168, 150, 0.4), transparent); }
+        .digital-lines::after { content: ""; position: absolute; top: 40px; left: 10%; width: 80%; height: 1px; background: linear-gradient(90deg, transparent, rgba(0, 168, 150, 0.2), transparent); }
+
+        .tag { font-size: 11px; font-weight: 700; color: #00a896; letter-spacing: 3px; text-transform: uppercase; display: inline-block; padding: 4px 12px; background: rgba(0, 168, 150, 0.1); border-radius: 20px; margin-bottom: 20px; align-self: center; }
+        
+        .main-title { margin-top: 40px; text-align: center; }
+        .main-title h1 { font-size: 24px; color: #ffffff; font-weight: 800; letter-spacing: 0.5px; line-height: 1.4; margin: 0 0 12px 0; }
+        .main-title p { font-size: 13px; color: #94a3b8; font-weight: 400; letter-spacing: 1px; text-transform: uppercase; }
+        
+        .author-section { text-align: center; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 20px; z-index: 2; }
+        .author-section .meta-text { font-size: 10px; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+        .author-name { font-size: 14px; font-weight: 600; color: #f1f5f9; letter-spacing: 1.5px; text-transform: uppercase; margin: 2px 0; }
+    </style>
+</head>
+<body>
+    <div class="cover-card">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <span class="tag">Digital Study Edition</span>
+        </div>
+        
+        <div class="digital-lines"></div>
+        
+        <div class="main-title">
+            <h1>PENGENDALIAN DIRI<br>DALAM PERSPEKTIF<br>HADIS NABI</h1>
+            <p>Studi Tematik Hadis</p>
+        </div>
+        
+        <div class="author-section">
+            <div class="meta-text">Disusun Oleh</div>
+            <div class="author-name">Ibadurrahman</div>
+            <div class="author-name">Muhammad Basir</div>
+        </div>
+    </div>
+</body>
+</html>
